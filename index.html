@@ -1,80 +1,102 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
     <meta charset="utf-8">
-    <title>Hololingo VR - Level 1</title>
+    <title>Hololingo VR System | Pico's World</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.3.2/dist/aframe-environment-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
-  </head>
-  <body>
-    <a-scene>
-      <a-assets>
-        <a-asset-item id="pico-model" src="assets/Parrot.glb"></a-asset-item>
-        
-        <audio id="snd-hello" src="assets/hello.mp3"></audio>
-        <audio id="snd-father" src="assets/father.mp3"></audio>
-        <audio id="snd-mother" src="assets/mother.mp3"></audio>
-      </a-assets>
+</head>
+<body>
 
-      <a-entity id="env" environment="preset: forest;"></a-entity>
+    <a-scene vr-mode-ui="enabled: true">
+        
+        <a-assets>
+            <a-asset-item id="pico-model" src="assets/Parrot.glb"></a-asset-item>
+            
+            <audio id="snd-hello" src="assets/hello.mp3"></audio>
+            <audio id="snd-father" src="assets/father.mp3"></audio>
+            <audio id="snd-mother" src="assets/mother.mp3"></audio>
+        </a-assets>
+
+        <a-entity id="env" environment="preset: forest; shadow: true; dressingAmount: 100"></a-entity>
 
         <a-entity id="pico" 
-          gltf-model="#pico-model" 
-          position="0 0.5 -3" 
-          rotation="0 0 0" 
-          scale="0.05 0.05 0.05"
-          animation-mixer>
+                  gltf-model="#pico-model" 
+                  position="0 0.5 -3" 
+                  rotation="0 0 0" 
+                  scale="0.05 0.05 0.05"
+                  animation-mixer>
         </a-entity>
-      
-      <a-entity id="unit-content"></a-entity>
 
-      <a-entity camera look-controls position="0 1.6 0">
-        <a-cursor fuse="true" fuse-timeout="1500" color="#FFD166" 
-                  geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03">
-        </a-cursor>
-      </a-entity>
+        <a-entity id="unit-content"></a-entity>
+
+        <a-entity camera look-controls position="0 1.6 0">
+            <a-cursor fuse="true" 
+                      fuse-timeout="1500" 
+                      color="#FFD166" 
+                      geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                      animation__fusing="property: scale; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500; startEvents: fusing">
+            </a-cursor>
+        </a-entity>
+
     </a-scene>
 
     <script>
-      const urlParams = new URLSearchParams(window.location.search);
-      const unit = urlParams.get('unit');
-      const content = document.getElementById('unit-content');
-      const env = document.getElementById('env');
+        // دالة قراءة رقم اليونيت من الرابط (e.g. ?unit=1)
+        const urlParams = new URLSearchParams(window.location.search);
+        const unit = urlParams.get('unit');
+        
+        const content = document.getElementById('unit-content');
+        const env = document.getElementById('env');
 
-      // دالة لتشغيل الصوت
-      function playSound(id) {
-        const sound = document.querySelector(id);
-        if (sound) sound.play();
-      }
+        // وظيفة تشغيل الصوت
+        function playSnd(id) {
+            const s = document.querySelector(id);
+            if (s) s.play();
+        }
 
-      // --- برمجة الوحدات ---
+        // --- منطق تبديل الوحدات ---
+        
+        if (unit === '1') {
+            // Unit 1: Hello
+            env.setAttribute('environment', 'preset: dream');
+            content.innerHTML = `
+                <a-text value="Hello! I am Pico!" align="center" position="0 2.5 -3" color="#2d3436" width="6"></a-text>
+                <a-text value="Welcome to Hololingo" align="center" position="0 2.1 -3" color="#4a4a4a" width="4"></a-text>
+            `;
+            // نطق الترحيب بعد ثانيتين
+            setTimeout(() => playSnd('#snd-hello'), 2000);
 
-      // Unit 1: Hello
-      if (unit === '1') {
-        env.setAttribute('environment', 'preset: dream');
-        content.innerHTML = `
-          <a-text value="Welcome to Hololingo!" align="center" position="0 2.2 -2.5" color="#2d3436" width="6"></a-text>
-        `;
-        // بيكو يسلم أول ما الصفحة تفتح
-        setTimeout(() => playSound('#snd-hello'), 2000);
+        } else if (unit === '2') {
+            // Unit 2: Family
+            env.setAttribute('environment', 'preset: contact');
+            content.innerHTML = `
+                <a-entity id="target-father" position="-1.5 0.6 -3">
+                    <a-box color="#00A8E8" width="0.6" height="1.2" depth="0.5">
+                        <a-text value="FATHER" align="center" position="0 0.8 0"></a-text>
+                    </a-box>
+                </a-entity>
+                
+                <a-entity id="target-mother" position="1.5 0.6 -3">
+                    <a-box color="#EF476F" width="0.6" height="1.1" depth="0.5">
+                        <a-text value="MOTHER" align="center" position="0 0.8 0"></a-text>
+                    </a-box>
+                </a-entity>
+            `;
 
-      // Unit 2: Family
-      } else if (unit === '2') {
-        env.setAttribute('environment', 'preset: contact');
-        content.innerHTML = `
-          <a-box id="obj-father" position="-1.5 0.6 -3" color="#00A8E8" depth="0.5" height="1.2">
-             <a-text value="FATHER" align="center" position="0 0.8 0"></a-text>
-          </a-box>
-          <a-box id="obj-mother" position="1.5 0.6 -3" color="#EF476F" depth="0.5" height="1.1">
-             <a-text value="MOTHER" align="center" position="0 0.8 0"></a-text>
-          </a-box>
-        `;
+            // التفاعل الصوتي عند "النظر" للمجسمات
+            document.getElementById('target-father').addEventListener('mouseenter', () => playSnd('#snd-father'));
+            document.getElementById('target-mother').addEventListener('mouseenter', () => playSnd('#snd-mother'));
+        }
 
-        // تفاعل النطق عند النظر
-        document.getElementById('obj-father').addEventListener('mouseenter', () => playSound('#snd-father'));
-        document.getElementById('obj-mother').addEventListener('mouseenter', () => playSound('#snd-mother'));
-      }
+        // تحسين الأداء: Fullscreen عند دخول وضع الـ VR
+        const sceneEl = document.querySelector('a-scene');
+        sceneEl.addEventListener('enter-vr', function () {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
