@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Pico 3D VR - Pro Version</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.3.2/dist/aframe-environment-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <a-assets>
+        <a-asset-item id="pico-model" src="https://cdn.glitch.me/605e2a51-d45f-4d8b-bded-cbf0c87474a4%2FPico_Bird.glb"></a-asset-item>
+        
+        <audio id="apple-audio" src="apple_sound.mp3"></audio>
+      </a-assets>
+
+      <a-entity environment="preset: forest; dressingColor: #4caf50; shadow: true"></a-entity>
+
+      <a-entity id="pico" 
+                gltf-model="#pico-model" 
+                position="0 1.2 -2.5" 
+                scale="0.5 0.5 0.5" 
+                rotation="0 180 0"
+                animation-mixer="clip: idle"> <a-text value="Hello! I am Pico" align="center" position="0 2 0" color="black" width="6" font="https://cdn.aframe.io/fonts/Monoid.fnt"></a-text>
+      </a-entity>
+
+      <a-entity position="1.5 1 -3" 
+                gltf-model="url(apple_model.glb)" 
+                class="interactable"
+                scale="0.2 0.2 0.2"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear">
+      </a-entity>
+
+      <a-entity camera look-controls position="0 1.6 0">
+        <a-cursor fuse="true" fuse-timeout="1500"
+                  geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                  material="color: #FFD166; shader: flat">
+        </a-cursor>
+      </a-entity>
+
+    </a-scene>
+
+    <script>
+      // هندسة التفاعل: لما الطفل "يبص" على حاجة
+      document.querySelector('.interactable').addEventListener('click', function () {
+        // تشغيل صوت الكلمة
+        const audio = document.querySelector('#apple-audio');
+        audio.play();
+        
+        // حركة تشجيعية من بيكو
+        const pico = document.querySelector('#pico');
+        pico.setAttribute('animation-mixer', 'clip: cheer; repetitions: 1');
+      });
+    </script>
+  </body>
+</html>
